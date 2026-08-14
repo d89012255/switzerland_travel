@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>瑞士全景 · 行程儀表板</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --glacier:#173B4F;
+    --glacier-deep:#0E2733;
+    --snow:#F3F6F5;
+    --pine:#2E5D4E;
+    --alpenglow:#E1662F;
+    --granite:#5C6570;
+    --gold:#C79A2E;
+    --card-bg:#FFFFFF;
+    --line: #D8DEDC;
+    --band-low:#5C9E7C;
+    --band-mid:#3D7A9E;
+    --band-high:#3A5A8C;
+    --band-glacier:#8FA6C4;
+    --band-desert:#D98B3F;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--snow);
+    color:var(--glacier-deep);
+    font-family:'Noto Sans TC','Archivo',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .hero{
+    background:linear-gradient(180deg,var(--glacier) 0%, var(--glacier-deep) 100%);
+    color:var(--snow);
+    padding:56px 24px 40px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:0; height:70px;
+    clip-path: polygon(0% 100%, 6% 40%, 14% 70%, 22% 20%, 30% 60%, 38% 10%, 47% 55%, 55% 25%, 64% 65%, 72% 15%, 80% 50%, 88% 30%, 96% 60%, 100% 35%, 100% 100%);
+    background-color: rgba(255,255,255,0.06);
+  }
+  .hero-inner{max-width:1080px;margin:0 auto;position:relative;z-index:2;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    letter-spacing:.18em;
+    font-size:12px;
+    color:var(--gold);
+    text-transform:uppercase;
+    margin-bottom:14px;
+  }
+  h1{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(42px,7vw,84px);
+    letter-spacing:.03em;
+    margin:0 0 6px;
+    line-height:.95;
+  }
+  .hero p.sub{
+    font-size:16px;
+    color:#C7D6DC;
+    max-width:620px;
+    margin:12px 0 28px;
+    line-height:1.7;
+  }
+  .flight-strip{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:10px;
+  }
+  .flight-chip{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.18);
+    padding:8px 14px;
+    border-radius:2px;
+    color:#DCE7EA;
+    white-space:nowrap;
+  }
+  .flight-chip b{color:var(--gold);}
+
+  .legend-bar{
+    max-width:1080px;
+    margin:-1px auto 0;
+    background:var(--card-bg);
+    border:1px solid var(--line);
+    border-top:none;
+    padding:18px 24px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:18px;
+    font-size:13px;
+    color:var(--granite);
+    position:relative;
+    z-index:3;
+  }
+  .legend-item{display:flex;align-items:center;gap:8px;}
+  .swatch{width:14px;height:14px;border-radius:3px;flex:none;}
+
+  .prep-section{
+    max-width:1080px;margin:16px auto 0;padding:22px 24px;
+    background:var(--card-bg);border:1px solid var(--line);border-radius:6px;
+  }
+  .prep-section h3{
+    font-family:'Bebas Neue',sans-serif;font-size:26px;margin:0 0 4px;color:var(--glacier-deep);
+  }
+  .prep-section .prep-sub{font-size:12.5px;color:var(--granite);margin-bottom:16px;}
+  .prep-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;}
+  .prep-card{border:1px solid var(--line);border-radius:6px;padding:14px 16px;background:var(--snow);}
+  .prep-card h5{margin:0 0 8px;font-size:13px;color:var(--glacier);display:flex;align-items:center;gap:6px;}
+  .prep-card p{margin:0;font-size:12.5px;color:#33454C;line-height:1.7;}
+  .prep-card table{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:4px;}
+  .prep-card table td{padding:3px 4px;border-bottom:1px solid var(--line);color:#33454C;}
+  .prep-card table td:first-child{font-weight:700;color:var(--glacier-deep);white-space:nowrap;}
+
+  .view-tabs{
+    max-width:1080px;margin:20px auto 0;padding:0 24px;
+    display:flex;gap:10px;
+  }
+  .view-tab{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    padding:10px 18px;
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--granite);
+    border-radius:6px 6px 0 0;
+    cursor:pointer;
+    border-bottom:none;
+  }
+  .view-tab.active{
+    background:var(--glacier-deep);
+    color:#fff;
+    border-color:var(--glacier-deep);
+  }
+
+  .ge-wrap{max-width:1080px;margin:0 auto;padding:0 24px 60px;}
+  .ge-intro{
+    background:var(--card-bg);border:1px solid var(--line);border-radius:6px;
+    padding:20px 24px;margin-bottom:16px;
+  }
+  .ge-intro h2{font-family:'Bebas Neue',sans-serif;font-size:30px;margin:0 0 8px;color:var(--glacier-deep);}
+  .ge-intro p{margin:0;font-size:13.5px;color:#4A5559;line-height:1.7;}
+
+  .ge-table{
+    width:100%;border-collapse:collapse;background:var(--card-bg);
+    border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-bottom:20px;
+    font-size:13px;
+  }
+  .ge-table th{
+    background:var(--glacier-deep);color:#fff;text-align:left;
+    padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;
+    letter-spacing:.06em;text-transform:uppercase;
+  }
+  .ge-table td{padding:10px 14px;border-bottom:1px solid var(--line);color:#33454C;}
+  .ge-table tr:last-child td{border-bottom:none;}
+  .ge-table .ge-time{font-family:'JetBrains Mono',monospace;color:var(--alpenglow);font-weight:700;white-space:nowrap;}
+  .ge-stars{color:var(--gold);letter-spacing:1px;white-space:nowrap;}
+
+  .ge-segments{display:flex;flex-direction:column;gap:14px;}
+  .ge-card{
+    background:var(--card-bg);border:1px solid var(--line);border-radius:6px;
+    overflow:hidden;display:grid;grid-template-columns:120px 1fr;
+  }
+  .ge-card-rail{
+    background:var(--glacier-deep);color:#fff;padding:16px 12px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;
+  }
+  .ge-card-rail .ge-seg-no{font-family:'Bebas Neue',sans-serif;font-size:26px;}
+  .ge-card-rail .ge-seg-time{font-family:'JetBrains Mono',monospace;font-size:11px;color:#C7D6DC;}
+  .ge-card-body{padding:16px 20px;}
+  .ge-card-body h4{margin:0 0 4px;font-size:15.5px;color:var(--glacier-deep);}
+  .ge-card-body .ge-card-stars{margin-bottom:8px;}
+  .ge-card-body ul{margin:0 0 8px;padding-left:18px;}
+  .ge-card-body li{font-size:13px;line-height:1.7;color:#33454C;}
+  .ge-tip{
+    display:inline-block;margin-top:2px;
+    background:var(--snow);border-left:3px solid var(--alpenglow);
+    padding:6px 10px;border-radius:4px;font-size:12px;color:#4A3B2E;
+  }
+  @media (max-width:640px){
+    .ge-card{grid-template-columns:1fr;}
+    .ge-card-rail{flex-direction:row;justify-content:flex-start;gap:10px;padding:10px 16px;}
+  }
+
+  .highlight-block{margin-bottom:16px;}
+  .highlight-block h4{
+    margin:0 0 10px;
+    font-size:12.5px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--pine);
+  }
+  .highlight-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+    gap:12px;
+  }
+  .hl-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:12px 14px;
+  }
+  .hl-card .hl-name{
+    font-size:13.5px;font-weight:700;color:var(--glacier-deep);margin-bottom:5px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .hl-card .hl-desc{font-size:12px;color:#4A5559;line-height:1.6;}
+
+  nav.daynav{
+    max-width:1080px;
+    margin:16px auto 0;
+    padding:0 24px;
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  nav.daynav::-webkit-scrollbar{display:none;}
+  .daybtn{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    flex:none;
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--granite);
+    padding:8px 12px;
+    border-radius:20px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:.15s;
+  }
+  .daybtn:hover{border-color:var(--glacier);}
+  .daybtn.active{
+    background:var(--glacier);
+    color:#fff;
+    border-color:var(--glacier);
+  }
+
+  main{max-width:1080px;margin:0 auto;padding:28px 24px 80px;}
+
+  .day-card{
+    display:none;
+    background:var(--card-bg);
+    border:1px solid var(--line);
+    border-radius:6px;
+    overflow:hidden;
+    animation:fadeIn .25s ease;
+  }
+  .day-card.show{display:grid;grid-template-columns:96px 1fr;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .day-rail{
+    background:var(--glacier-deep);
+    color:#fff;
+    padding:24px 12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+  }
+  .day-num{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:40px;
+    line-height:1;
+  }
+  .day-total{font-family:'JetBrains Mono',monospace;font-size:11px;color:#8FA6B0;}
+  .elev-track{
+    margin-top:10px;
+    width:10px;
+    flex:1;
+    min-height:160px;
+    background:rgba(255,255,255,0.08);
+    border-radius:6px;
+    position:relative;
+  }
+  .elev-fill{
+    position:absolute;
+    bottom:0;left:0;right:0;
+    border-radius:6px;
+    transition:.3s;
+  }
+  .elev-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    color:var(--gold);
+    text-align:center;
+    margin-top:8px;
+  }
+
+  .day-body{padding:26px 28px;}
+  .day-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:16px;
+    flex-wrap:wrap;
+    border-bottom:1px dashed var(--line);
+    padding-bottom:16px;
+    margin-bottom:18px;
+  }
+  .date-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    color:var(--alpenglow);
+    letter-spacing:.05em;
+  }
+  .day-title{
+    font-size:20px;
+    font-weight:900;
+    margin:4px 0 6px;
+    color:var(--glacier-deep);
+  }
+  .route-line{
+    font-size:13.5px;
+    color:var(--granite);
+    line-height:1.6;
+  }
+  .hotel-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;
+    background:var(--snow);
+    border:1px solid var(--line);
+    padding:6px 12px;
+    border-radius:20px;
+    color:var(--glacier);
+    white-space:nowrap;
+  }
+
+  .grid2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+  }
+  @media (max-width:720px){
+    .grid2{grid-template-columns:1fr;}
+    .day-card.show{grid-template-columns:64px 1fr;}
+    .day-num{font-size:28px;}
+  }
+
+  .block{background:var(--snow);border:1px solid var(--line);border-radius:6px;padding:16px 18px;}
+  .block h4{
+    margin:0 0 10px;
+    font-size:12px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--pine);
+    display:flex;align-items:center;gap:6px;
+  }
+  .block ul{margin:0;padding-left:18px;}
+  .block li{font-size:13.5px;line-height:1.75;color:#33454C;}
+  .weather-line{
+    display:flex;align-items:baseline;gap:10px;
+    font-family:'JetBrains Mono',monospace;
+    margin-bottom:8px;
+  }
+  .temp{font-size:22px;font-weight:700;color:var(--glacier-deep);}
+  .temp-sub{font-size:12px;color:var(--granite);}
+  .note{
+    grid-column:1/-1;
+    background:#fff;
+    border:1px solid var(--line);
+    border-left:3px solid var(--alpenglow);
+    border-radius:4px;
+    padding:14px 16px;
+    font-size:13px;
+    color:#4A3B2E;
+    line-height:1.7;
+  }
+  .note b{color:var(--alpenglow);}
+
+  .timeline-block{
+    background:#fff;
+    border:1px solid var(--line);
+    border-left:4px solid var(--glacier);
+    border-radius:6px;
+    padding:20px 22px;
+    margin-bottom:16px;
+  }
+  .timeline-block h4{
+    margin:0 0 16px;
+    font-size:13px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--glacier-deep);
+    font-weight:700;
+  }
+  .timeline{position:relative;padding-left:6px;}
+  .timeline::before{
+    content:"";
+    position:absolute;
+    left:57px; top:6px; bottom:6px;
+    width:2px;
+    background:var(--line);
+  }
+  .tl-row{
+    display:grid;
+    grid-template-columns:52px 20px 1fr;
+    align-items:start;
+    gap:0;
+    padding:8px 0;
+  }
+  .tl-time{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    color:var(--alpenglow);
+    font-weight:700;
+    padding-top:1px;
+  }
+  .tl-dot{
+    display:flex; justify-content:center;
+  }
+  .tl-dot::before{
+    content:"";
+    width:9px;height:9px;border-radius:50%;
+    background:var(--glacier);
+    border:2px solid #fff;
+    box-shadow:0 0 0 1px var(--line);
+    margin-top:4px;
+  }
+  .tl-text{font-size:14.5px;color:#28363C;line-height:1.6;padding-bottom:2px;font-weight:500;}
+  @media (max-width:520px){
+    .tl-row{grid-template-columns:44px 16px 1fr;}
+    .timeline::before{left:49px;}
+    .tl-time{font-size:11.5px;}
+  }
+
+  details.aux{
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:var(--snow);
+  }
+  details.aux summary{
+    list-style:none;
+    cursor:pointer;
+    padding:12px 16px;
+    font-size:12.5px;
+    color:var(--granite);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  details.aux summary::-webkit-details-marker{display:none;}
+  details.aux summary::after{
+    content:"▾";
+    color:var(--granite);
+    margin-left:auto;
+    transition:.2s;
+  }
+  details.aux[open] summary::after{transform:rotate(180deg);}
+  details.aux summary .aux-hint{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    color:var(--glacier);
+    margin-left:auto;
+    margin-right:8px;
+  }
+  .aux-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:14px;
+    padding:4px 16px 14px;
+  }
+  @media (max-width:720px){.aux-grid{grid-template-columns:1fr;}}
+  .aux-col h5{
+    margin:0 0 8px;
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--pine);
+  }
+  .aux-col ul{margin:0;padding-left:16px;}
+  .aux-col li{font-size:12.5px;line-height:1.65;color:#4A5559;}
+  .aux-temp{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--glacier-deep);}
+  .aux-sub{font-size:12px;color:var(--granite);margin-top:4px;line-height:1.5;}
+  .aux-notes{
+    margin:0 16px 14px;
+    padding:10px 12px;
+    background:#fff;
+    border-left:3px solid var(--alpenglow);
+    border-radius:4px;
+    font-size:12px;
+    color:#4A3B2E;
+    line-height:1.7;
+  }
+
+  footer.tiers{
+    max-width:1080px;margin:20px auto 60px;padding:24px 28px;
+    background:var(--card-bg);border:1px solid var(--line);border-radius:6px;
+  }
+  footer.tiers h3{font-family:'Bebas Neue';font-size:26px;margin:0 0 14px;color:var(--glacier-deep);}
+  .tier-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;}
+  .tier{border:1px solid var(--line);border-radius:6px;padding:14px;}
+  .tier .bar{height:6px;border-radius:3px;margin-bottom:10px;}
+  .tier h5{margin:0 0 8px;font-size:13px;color:var(--glacier-deep);}
+  .tier p{margin:0;font-size:12px;color:var(--granite);line-height:1.6;}
+
+  .disclaimer{
+    max-width:1080px;margin:0 auto;padding:0 24px 10px;
+    font-size:11.5px;color:var(--granite);
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">SWISS PANORAMA · 2026.09.12 — 09.28</div>
+    <h1>16 DAYS ACROSS<br>THE ALPS</h1>
+    <p class="sub">蘇黎世 → 琉森 → 伯恩 → 格林德瓦 → 策馬特 → 聖莫里茲 → 蘇黎世 → 杜拜。從湖畔古城到 3,883 公尺的冰川平台，一份跟著海拔升降走的每日天氣、穿搭與注意事項儀表板。</p>
+    <div class="flight-strip" id="flightStrip"></div>
+  </div>
+</div>
+
+<div class="legend-bar">
+  <div class="legend-item"><span class="swatch" style="background:var(--band-low)"></span>低海拔市區 &lt;800m</div>
+  <div class="legend-item"><span class="swatch" style="background:var(--band-mid)"></span>中海拔山城 800–2000m</div>
+  <div class="legend-item"><span class="swatch" style="background:var(--band-high)"></span>高山 2000–3000m</div>
+  <div class="legend-item"><span class="swatch" style="background:var(--band-glacier)"></span>冰川峰頂 &gt;3000m</div>
+  <div class="legend-item"><span class="swatch" style="background:var(--band-desert)"></span>杜拜沙漠氣候</div>
+</div>
+
+<div class="prep-section">
+  <h3>✈️ 行前注意事項</h3>
+  <div class="prep-sub">出發前務必確認以下事項，行程中也可隨時回來查閱</div>
+  <div class="prep-grid">
+    <div class="prep-card">
+      <h5>📄 證件與簽證</h5>
+      <p>護照效期建議6個月以上；9/26轉機杜拜需事先辦理<b>杜拜簽證</b>與<b>網路申報</b>；四段航班皆為<b>48小時前開放線上預辦登機</b>，記得提前完成、行李記得要求「直掛」到底站。</p>
+    </div>
+    <div class="prep-card">
+      <h5>🎫 交通票券</h5>
+      <p>Swiss Travel Pass 15天連續票（約CHF499）。若多一天緩衝，可9/12先買票、9/13才開卡啟用；蘇黎世機場當天可考慮先買一日票(ONE DAY PASS)銜接。</p>
+    </div>
+    <div class="prep-card">
+      <h5>🧳 行李托運策略</h5>
+      <p>全程善用SBB行李快遞服務，將大件行李分段提前寄到下一個大站（格林德瓦→策馬特→聖莫里茲→蘇黎世），減少每次搬運。<b>出發前於台灣就要先分配好托運箱與隨身行李的內容物</b>，避免中途要用的東西被寄走。</p>
+    </div>
+    <div class="prep-card">
+      <h5>🕐 各站行李寄送／領取時間</h5>
+      <table>
+        <tr><td>Zurich HB</td><td>平日08:00–19:00／假日09:00–18:00</td></tr>
+        <tr><td>Luzern</td><td>每日08:00–19:00</td></tr>
+        <tr><td>Grindelwald</td><td>寄送08:00–17:00／領取08:00–18:00</td></tr>
+        <tr><td>Zermatt</td><td>寄送07:30–18:00／領取07:00–19:30</td></tr>
+        <tr><td>St. Moritz</td><td>08:15–18:15</td></tr>
+      </table>
+    </div>
+    <div class="prep-card">
+      <h5>💰 現金與支付</h5>
+      <p>瑞士主要通行<b>瑞士法郎(CHF)</b>，Apple Pay/信用卡也很普及；9/24 Tirano(義大利)、9/26 Konstanz(德國)這兩段建議準備少量<b>歐元</b>現金。</p>
+    </div>
+    <div class="prep-card">
+      <h5>🔌 通訊與電源</h5>
+      <p>瑞士為<b>Type J</b>轉接頭（三孔圓形，與常見歐規不同，需特別確認）；建議行前開通eSIM或國際漫遊；行動電源記得帶好，山區纜車全程拍照錄影耗電快。</p>
+    </div>
+    <div class="prep-card">
+      <h5>🍽️ 餐飲提醒</h5>
+      <p>多數午餐以COOP/Migros/Denner超市簡便解決，記得<b>前一晚先買好隔天午餐</b>；部分景點餐廳需提前訂位（雪朗峰Piz Gloria、策馬特Schäferstube等），出發前再次確認訂位狀態。</p>
+    </div>
+    <div class="prep-card">
+      <h5>☀️ 天氣與裝備</h5>
+      <p>山區日夜溫差大、部分高山纜車全年可能降雪，建議採<b>洋蔥式多層次穿法</b>；托運行李中記得放好保暖層與雨具（各天詳細穿搭建議見下方每日卡片）。</p>
+    </div>
+  </div>
+</div>
+
+<div class="view-tabs">
+  <button class="view-tab active" id="tabDays">📅 每日行程</button>
+  <button class="view-tab" id="tabGlacier">🚂 冰河列車攻略</button>
+</div>
+
+<div id="viewDays">
+<nav class="daynav" id="dayNav"></nav>
+
+<main id="cards"></main>
+</div>
+
+<div id="viewGlacier" style="display:none;">
+  <div class="ge-wrap">
+    <div class="ge-intro">
+      <h2>冰河列車區間車攻略</h2>
+      <p>9/23這天搭的其實是 Glacier Express 路線的區間車接力，轉乘時間抓得都很合理。全程策馬特→菲斯普→安德馬特→迪森蒂斯→庫爾→聖莫里茲，越往後越精彩，尤其安德馬特之後幾乎沒有冷場，建議全程坐窗邊、手機/相機電量顧好。</p>
+    </div>
+
+    <table class="ge-table">
+      <tr><th>時間</th><th>路段</th><th>精華程度</th></tr>
+      <tr><td class="ge-time">08:37–09:47</td><td>Zermatt → Visp</td><td class="ge-stars">⭐⭐⭐</td></tr>
+      <tr><td class="ge-time">10:08–12:20</td><td>Visp → Andermatt</td><td class="ge-stars">⭐⭐⭐⭐</td></tr>
+      <tr><td class="ge-time">12:38–13:45</td><td>Andermatt → Disentis</td><td class="ge-stars">⭐⭐⭐⭐⭐</td></tr>
+      <tr><td class="ge-time">13:50–15:05</td><td>Disentis → Chur</td><td class="ge-stars">⭐⭐⭐⭐⭐</td></tr>
+      <tr><td class="ge-time">15:58–17:55</td><td>Chur → St. Moritz</td><td class="ge-stars">⭐⭐⭐⭐⭐</td></tr>
+    </table>
+
+    <div class="ge-segments">
+      <div class="ge-card">
+        <div class="ge-card-rail"><div class="ge-seg-no">①</div><div class="ge-seg-time">08:37–09:47</div></div>
+        <div class="ge-card-body">
+          <h4>Zermatt → Visp</h4>
+          <div class="ge-card-stars ge-stars">⭐⭐⭐</div>
+          <ul>
+            <li>離開策馬特時可回望馬特洪峰山谷</li>
+            <li>沿途河谷與阿爾卑斯小木屋</li>
+          </ul>
+          <span class="ge-tip">💡 天氣好很舒服，但不用一直盯著看，可以放鬆休息，養精蓄銳等後面的重頭戲。</span>
+        </div>
+      </div>
+
+      <div class="ge-card">
+        <div class="ge-card-rail"><div class="ge-seg-no">②</div><div class="ge-seg-time">10:08–12:20</div></div>
+        <div class="ge-card-body">
+          <h4>Visp → Andermatt</h4>
+          <div class="ge-card-stars ge-stars">⭐⭐⭐⭐</div>
+          <ul>
+            <li>Goms Valley（戈姆斯河谷）</li>
+            <li>小木屋聚落</li>
+            <li>河流沿線風光</li>
+            <li>高山草原</li>
+          </ul>
+          <span class="ge-tip">💡 越往後越漂亮，到 Realp 附近開始就要準備看窗外了。</span>
+        </div>
+      </div>
+
+      <div class="ge-card">
+        <div class="ge-card-rail"><div class="ge-seg-no">③</div><div class="ge-seg-time">12:38–13:45</div></div>
+        <div class="ge-card-body">
+          <h4>Andermatt → Disentis</h4>
+          <div class="ge-card-stars ge-stars">⭐⭐⭐⭐⭐</div>
+          <ul>
+            <li>Oberalp Pass（歐拜阿卜隘口）</li>
+            <li>高山湖泊</li>
+            <li>燈塔</li>
+            <li>萊茵河源頭附近</li>
+            <li>山谷一路下降的壯闊景觀</li>
+          </ul>
+          <span class="ge-tip">⚠ 全車最精彩路段之一，一定別睡，建議全程看窗外。</span>
+        </div>
+      </div>
+
+      <div class="ge-card">
+        <div class="ge-card-rail"><div class="ge-seg-no">④</div><div class="ge-seg-time">13:50–15:05</div></div>
+        <div class="ge-card-body">
+          <h4>Disentis → Chur</h4>
+          <div class="ge-card-stars ge-stars">⭐⭐⭐⭐⭐</div>
+          <ul>
+            <li>Rhine Gorge（萊茵峽谷，瑞士大峽谷）</li>
+          </ul>
+          <span class="ge-tip">💡 很多人甚至認為這段比 Oberalp Pass 更漂亮，同樣別分心。</span>
+        </div>
+      </div>
+
+      <div class="ge-card">
+        <div class="ge-card-rail"><div class="ge-seg-no">⑤</div><div class="ge-seg-time">15:58–17:55</div></div>
+        <div class="ge-card-body">
+          <h4>Chur → St. Moritz</h4>
+          <div class="ge-card-stars ge-stars">⭐⭐⭐⭐⭐</div>
+          <ul>
+            <li>Albula UNESCO世界遺產路段</li>
+            <li>Landwasser Viaduct（蘭德瓦薩高架橋）</li>
+            <li>Filisur、Bergün 山城</li>
+            <li>螺旋隧道（Kehrtunnel）</li>
+            <li>沿途湖泊</li>
+            <li>Engadin Valley（恩加丁山谷）</li>
+          </ul>
+          <span class="ge-tip">⚠ 又一個高潮路段，建議坐右側車尾，Landwasser高架橋才拍得到火車同框畫面。</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="tiers">
+  <h3>穿搭與裝備分級指南</h3>
+  <div class="tier-grid">
+    <div class="tier">
+      <div class="bar" style="background:var(--band-low)"></div>
+      <h5>低海拔市區（蘇黎世／琉森／伯恩／康斯坦茲）</h5>
+      <p>白天15–20°C、早晚8–12°C。薄長袖＋薄外套，防潑水風衣應付陣雨，好走的城市鞋即可。</p>
+    </div>
+    <div class="tier">
+      <div class="bar" style="background:var(--band-mid)"></div>
+      <h5>山城／纜車站（格林德瓦／溫根／策馬特／聖莫里茲）</h5>
+      <p>白天10–16°C、早晚3–8°C。刷毛midlayer＋防風外套，備薄手套、毛帽，健行鞋。</p>
+    </div>
+    <div class="tier">
+      <div class="bar" style="background:var(--band-high)"></div>
+      <h5>高山觀景台（瑞吉／皮拉圖斯／石丹峰／雪朗峰／五湖）</h5>
+      <p>白天3–10°C，強紫外線、風大明顯更冷。厚刷毛/薄羽絨＋防風防水外殼，保暖手套、毛帽、太陽眼鏡、防曬乳必備。</p>
+    </div>
+    <div class="tier">
+      <div class="bar" style="background:var(--band-glacier)"></div>
+      <h5>冰川峰頂（少女峰／馬特洪峰冰川天堂／哥納葛特／魔女峰）</h5>
+      <p>全年可能降雪，體感常在0°C以下。厚羽絨/防水雪衣、發熱衣、防水手套、圍脖、雪地防滑鞋墊或抓地力好的鞋、護唇膏。留意高山反應（頭暈、喘）。</p>
+    </div>
+    <div class="tier">
+      <div class="bar" style="background:var(--band-desert)"></div>
+      <h5>杜拜（沙漠氣候）</h5>
+      <p>白天35–40°C、濕度高。透氣短袖/薄長袖防曬、遮陽帽、高係數防曬乳、太陽眼鏡，室內商場冷氣強可備薄外套，注意補水。</p>
+    </div>
+  </div>
+</footer>
+
+<p class="disclaimer">＊天氣為9月阿爾卑斯山區歷年同期氣候平均值推估，非即時預報；出發前2週請以 MeteoSwiss（瑞士）／各纜車官網公告的即時預報與封路資訊為準，尤其少女峰、雪朗峰、冰川天堂、哥納葛特等高山纜車常因天候臨時停駛或需提前預約。</p>
+
+<script>
+const flights = [
+  {d:"09/12 (六)", r:"TPE→DXB", t:"00:30→05:15", f:"EK0387"},
+  {d:"09/12 (六)", r:"DXB→ZRH", t:"08:40→13:20", f:"EK0087"},
+  {d:"09/26 (六)", r:"ZRH→DXB", t:"22:15→06:25", f:"EK0086"},
+  {d:"09/28 (一)", r:"DXB→TPE", t:"03:45→16:15", f:"EK0386"},
+];
+document.getElementById("flightStrip").innerHTML = flights.map(f=>
+  `<div class="flight-chip">${f.d} &nbsp;<b>${f.r}</b>&nbsp; ${f.t} &nbsp;·&nbsp; ${f.f}</div>`
+).join("");
+
+// tier -> color + fill %
+const TIER = {
+  low:      {color:"var(--band-low)",      fill:20, label:"低海拔"},
+  mid:      {color:"var(--band-mid)",      fill:40, label:"山城"},
+  high:     {color:"var(--band-high)",     fill:65, label:"高山"},
+  glacier:  {color:"var(--band-glacier)",  fill:95, label:"冰川峰頂"},
+  desert:   {color:"var(--band-desert)",   fill:15, label:"沙漠"},
+};
+
+const days = [
+{
+  date:"09/12（六）", hotel:"Hotel Bristol Zurich", tier:"low", altLabel:"~400m",
+  title:"蘇黎世機場 → 市區徒步巡禮 → 軍火庫餐廳晚餐",
+  route:"機場 → 飯店 → 班霍夫大街 → 奧斯丁巷 → 林登霍夫山 → 聖彼得教堂(~16:00前免費) → 閱兵廣場 → 湖畔雕像 → 聖母大教堂(~18:00前主堂免費) → 大教堂(~18:00前) → Zeughauskeller晚餐 → 飯店",
+  weather:{temp:"15–21°C", sub:"日夜溫差大，午後偶陣雨"},
+  clothing:["長袖襯衫/薄上衣＋薄外套或防風夾克","舒適好走的鞋（今日徒步量大）","隨身摺疊雨傘或防水外套"],
+  notes:["機場可直接將兩件大行李寄送至格林德瓦車站（也可9/13離開蘇黎世時再寄），出發前需先確認行李箱內容物","聖彼得教堂、聖母大教堂、大教堂多在16:00–18:00後只開放禮拜、不對外開放，需抓緊時間內完成","晚餐已改訂位18:00（原訂19:15，已發信更改），用餐體驗:Zeughauskeller會有座位費/麵包費，若不需要可請店員收走麵包退費","蘇黎世火車站遊客中心可蓋紀念章，也可購買Swiss Travel Pass"],
+  packing:["護照/機票/訂房證明","歐元或瑞士法郎現金＋信用卡","轉接頭（Type J）","行動電源","雨傘/輕便雨衣"],
+  schedule:[
+    {t:"13:20", a:"抵達蘇黎世機場，入境、提領行李"},
+    {t:"14:00", a:"機場寄送兩個大行李至格林德瓦（行前需確認行李箱內容物）"},
+    {t:"15:00", a:"飯店 → 班霍夫大街 → 奧斯丁巷 → 林登霍夫山"},
+    {t:"~16:00", a:"聖彼得教堂（把握免費開放時間）→ 閱兵廣場"},
+    {t:"~17:00", a:"蘇黎世湖畔雕像 → 聖母大教堂（主堂免費至~18:00）"},
+    {t:"~17:30", a:"蘇黎世大教堂（開放至~18:00）"},
+    {t:"18:00", a:"Zeughauskeller軍火庫餐廳晚餐（已改訂位18:00）"},
+    {t:"19:30", a:"返回飯店check-in、稍作休息"},
+  ]
+},
+{
+  date:"09/13（日）", hotel:"Hotel Central Luzern", tier:"low", altLabel:"~400m",
+  title:"萊茵瀑布（南岸→北岸）→ 沙夫豪森 → 施泰因 → 前往琉森",
+  route:"飯店 → 萊茵瀑布南岸 → 北岸 → 沙夫豪森舊城 → 施泰因(萊茵河畔小鎮) → 飯店(琉森)",
+  weather:{temp:"14–19°C", sub:"瀑布邊水氣大、體感較涼，注意風向水花"},
+  clothing:["防水外套（瀑布邊水花大）","防滑好走的鞋","薄圍巾或帽子擋風"],
+  notes:["萊茵瀑布南北岸皆有觀景平台與船班可近距離看瀑布，建議預留時間拍照","施泰因是彩繪山形牆建築聞名的小鎮，適合悠閒散步","移動路程較長，注意瑞士火車/巴士轉乘時間"],
+  packing:["相機防水保護（近瀑布易有水霧）","瑞士交通票證/Swiss Travel Pass","保溫瓶熱飲"],
+  schedule:[
+    {t:"07:00-08:00", a:"早餐＆退房，行李寄放（或直接寄至下個目的地）"},
+    {t:"08:05", a:"火車出發前往萊茵瀑布南岸 Schloss Laufen（08:51轉車抵達）"},
+    {t:"09:00-11:00", a:"萊茵瀑布南岸（勞芬城堡景觀台CHF5）→北岸Neuhausen→遊客中心"},
+    {t:"11:30-13:00", a:"沙夫豪森：車站→噴水池→騎士之家濕壁畫→聖約翰教堂(免費)→慕諾特要塞"},
+    {t:"13:00", a:"午餐：Coop Supermarkt Schaffhausen（車上吃）"},
+    {t:"13:19", a:"火車前往施泰因（13:43抵達）"},
+    {t:"14:00-15:30", a:"施泰因：市政廳廣場→鐘塔→聖格奧爾根修道院(免費)→聖喬治修道院博物館(STP免費)→河岸散步"},
+    {t:"17:00", a:"出發前往琉森（17:10發車，約17:51/18:25抵達）"},
+    {t:"18:30", a:"Coop Supermarkt Luzern Bahnhof（晚餐選購）"},
+    {t:"20:30", a:"卡貝爾橋夜景"},
+  ]
+},
+{
+  date:"09/14（一）", hotel:"Hotel Central Luzern", tier:"high", altLabel:"~1800m 瑞吉山",
+  title:"伯恩市區觀光 → 瑞吉山（歐洲山后）",
+  route:"飯店 → 伯恩舊城區 → 瑞吉山（齒軌火車/纜車） → 飯店(琉森)",
+  weather:{temp:"伯恩12–18°C／瑞吉山3–9°C", sub:"山頂風大、日夜溫差明顯，山下多雲時山頂視野可能受限"},
+  clothing:["洋蔥式多層次穿搭：排汗上衣＋刷毛中層＋防風外套","保暖帽/薄手套（山頂用）","太陽眼鏡＋防曬乳（高山紫外線強）"],
+  notes:["伯恩舊城為UNESCO世界遺產，鐘樓報時、熊苑均值得一看","瑞吉山路線：Bern→Arth-Goldau（火車）→Rigi Kulm（齒軌）→Rigi Kaltbad（健行Flower Trail 1-1.5hr）→Weggis（纜車）→Luzern（船，最後一班20:07）","太累的話可晚一小時出發，但行程會壓縮；山頂氣溫比市區低約10°C，上山前務必加穿外層"],
+  packing:["保暖外套(可收納型)","登山鞋或防滑好走鞋","水壺、輕便零食"],
+  schedule:[
+    {t:"07:00-08:00", a:"早餐"},
+    {t:"08:00", a:"火車琉森→伯恩（08:00發車，約09:26抵達，太累可晚一小時但行程會壓縮）"},
+    {t:"09:00-11:30", a:"伯恩：車站→玫瑰花園→熊公園→尼德格橋→阿勒河畔→伯恩大教堂→愛因斯坦故居→時鐘塔(整點報時)→國會大廈"},
+    {t:"12:00", a:"午餐：COOP（車上吃）"},
+    {t:"12:00", a:"火車伯恩→Arth-Goldau（約13:38抵達，轉車）"},
+    {t:"13:55", a:"齒軌列車Arth-Goldau→Rigi Kulm（14:34抵達）"},
+    {t:"14:30-16:30", a:"瑞吉山頂全景 → 健行Flower Trail至Rigi Kaltbad（1-1.5hr）"},
+    {t:"16:10", a:"纜車Rigi Kaltbad→Weggis（約16:50抵達）"},
+    {t:"17:05", a:"船Weggis→Luzern（約17:47抵達，最後一班20:07）"},
+    {t:"19:00", a:"晚餐（COOP，記得買隔天午餐）"},
+  ]
+},
+{
+  date:"09/15（二）", hotel:"Hotel Central Luzern", tier:"high", altLabel:"~2132m 皮拉圖斯山",
+  title:"皮拉圖斯山（逆時針）→ 琉森市區",
+  route:"飯店 → 皮拉圖斯山(纜車/齒軌火車逆時針路線) → 琉森市區(卡貝爾橋、獅子紀念碑) → 飯店",
+  weather:{temp:"2–9°C（山頂）／13–18°C（市區）", sub:"山頂偶有雲霧籠罩，早班上山視野較佳"},
+  clothing:["厚刷毛或薄羽絨外套","防風防水外殼夾克","保暖手套、毛帽"],
+  notes:["逆時針路線：Kriens巴士(STP免費)→Kriens Zentrum Pilatus(走路10分)→Fräkmüntegg纜車→Pilatus Kulm纜車→山頂→Alpnachstad齒軌火車(全球最陡48%坡度)→Luzern船","齒軌列車與纜車套票可在琉森火車站2樓SBB櫃檯購買(20%折扣，約42CHF)，山上共5條步道可選，1~3較簡易","琉森市區卡貝爾橋、獅子紀念碑為經典景點，獅子旁有Outlet可買便宜馬特洪峰杯"],
+  packing:["太陽眼鏡、防曬乳（山頂紫外線強）","保暖layer","相機"],
+  schedule:[
+    {t:"08:00", a:"飯店出發前往皮拉圖斯山"},
+    {t:"08:45", a:"搭乘空中纜車上山（逆時針：先纜車後齒軌火車）"},
+    {t:"10:00", a:"皮拉圖斯山頂步道、觀景台"},
+    {t:"12:30", a:"搭乘全球最陡齒軌火車下山"},
+    {t:"14:00", a:"返回琉森市區"},
+    {t:"14:30", a:"卡貝爾橋、獅子紀念碑"},
+    {t:"16:00", a:"舊城區自由活動／購物"},
+    {t:"18:30", a:"晚餐"},
+    {t:"20:00", a:"返回飯店"},
+  ]
+},
+{
+  date:"09/16（三）", hotel:"Grindelwald（Bernerhof 或 Spinne，擇一）", tier:"high", altLabel:"~1898m 石丹峰",
+  title:"石丹峰（旋轉纜車）→ 前往格林德瓦",
+  route:"飯店 → 石丹峰(世界首創旋轉纜車) → 飯店（琉森） → 前往格林德瓦 → 飯店",
+  weather:{temp:"3–10°C（石丹峰）／8–14°C（格林德瓦）", sub:"山區午後易起風，移動日建議上午安排山頂行程"},
+  clothing:["防風外套為主，早晚加一件保暖midlayer","舒適健行鞋（移動日行李較重，鞋子要好走）"],
+  notes:["石丹峰纜車車廂會360°旋轉，全景視野佳（觀景台前方即為鐵力士山），注意隨身物品勿掉落","今日一早先寄放行李、退房，COOP先買好中餐；行李已提前寄送至策馬特車站","晚餐可選Interlaken多家餐廳：Barry's起司鍋/牛排、義式IL BUONGUSTAIO、印度料理、韓式烤肉等"],
+  packing:["隨身輕便背包（山頂纜車行李需精簡）","保暖外套","水壺"],
+  schedule:[
+    {t:"07:10-08:10", a:"早餐＆退房，行李寄放，COOP先買中餐"},
+    {t:"08:00", a:"行李寄送至策馬特車站"},
+    {t:"08:10", a:"火車琉森→Stans（08:24/08:48抵達）"},
+    {t:"08:30/09:00", a:"復古小火車＋纜車 Stans→石丹峰（約09:00/10:00抵達）"},
+    {t:"10:00-11:30", a:"石丹峰頂旋轉觀景台、旱獺保護區"},
+    {t:"11:45", a:"纜車下山返回Stans（約12:15抵達）"},
+    {t:"12:34", a:"火車Stans→琉森（約12:49抵達）"},
+    {t:"14:00", a:"火車琉森→格林德瓦（約15:40/16:40/17:40抵達，車上吃COOP午餐）"},
+    {t:"16:40", a:"取行李（盡量17:00前完成）"},
+    {t:"17:00", a:"晚餐（Interlaken多家餐廳可選，或Coop Supermarkt Grindelwald買隔天午餐）"},
+  ]
+},
+{
+  date:"09/17（四）", hotel:"Grindelwald（同上）", tier:"glacier", altLabel:"~3454m 少女峰",
+  title:"少女峰（歐洲之巔）→ 小夏戴克步道 → 溫根",
+  route:"飯店 → 少女峰(Top of Europe) → 小夏戴克(Kleine Scheidegg)健行步道 → 溫根(Wengen) → 飯店",
+  weather:{temp:"少女峰 -5–3°C／小夏戴克3–9°C／溫根8–14°C", sub:"全年可能降雪，冰宮內部濕滑寒冷，山下溫根相對溫和"},
+  clothing:["發熱衣＋厚刷毛/薄羽絨＋防水防風外殼（三層式）","防水手套、保暖毛帽、圍脖","抓地力佳的健走鞋（步道碎石路面）","太陽眼鏡（雪地反光刺眼）＋高係數防曬乳"],
+  notes:["少女峰票價約189.6CHF(視天氣)，建議當天或前一天在格林德瓦車站購票；列車座椅面對面，易暈車者建議坐面向行進方向","Eigerwand艾格壁站、Eismeer冰海站(海拔約3160m)各停靠5分鐘可下車拍冰河景觀、適應高度","建議自帶午餐上山；溫根回程建議坐火車左側，可同框拍到施陶河瀑布與勞特布龍嫩教堂"],
+  packing:["護唇膏","保暖手套備用一副","保溫瓶熱飲、行動糧","相機電池（低溫耗電快，備用電池)"],
+  schedule:[
+    {t:"07:00-07:30", a:"早餐"},
+    {t:"07:17", a:"火車格林德瓦→Grindelwald Terminal（07:20/07:50抵達）"},
+    {t:"07:45起", a:"Eiger Express纜車 Terminal→Eigergletscher（20分鐘一班）"},
+    {t:"08:15", a:"Jungfraubahn齒軌列車 Eigergletscher→Jungfraujoch（停靠Eismeer 5分鐘，約08:41/09:11抵達）"},
+    {t:"09:30-12:00", a:"少女峰「Top of Europe」：Sphinx觀景台、大水晶球、冰宮、Snow Fun、Glacier Plateau"},
+    {t:"12:17", a:"齒軌列車返回Eigergletscher（約12:41抵達）"},
+    {t:"13:00-14:00", a:"健行 Eigergletscher→Kleine Scheidegg（Fallbodensee湖泊，約1小時，自帶午餐）"},
+    {t:"14:14", a:"火車Kleine Scheidegg→Wengen（約14:38抵達）"},
+    {t:"14:30-15:30", a:"溫根小鎮：Wengen Viewpoint俯瞰瀑布、Wengen教堂"},
+    {t:"15:41", a:"火車溫根→格林德瓦（建議坐左側，約16:40抵達）"},
+    {t:"17:00", a:"晚餐（Coop Supermarkt Grindelwald）"},
+  ]
+},
+{
+  date:"09/18（五）", hotel:"Grindelwald（同上）", tier:"high", altLabel:"~2265m Bachalpsee",
+  title:"First山 → Bachalpsee健行 → 圖恩湖/布里恩茲湖 → Harder Kulm",
+  route:"飯店 → First山 → Bachalpsee(健行) → 圖恩湖(施皮茲/圖恩)或布里恩茲湖遊湖 → Harder Kulm → 飯店",
+  weather:{temp:"First/Bachalpsee 2–9°C／湖區13–18°C／Harder Kulm 4–10°C", sub:"Bachalpsee步道有起伏坡地，湖區风景平地气候溫和"},
+  clothing:["防風防水外殼＋中層保暖","健行鞋（Bachalpsee步道碎石、偶有泥濘)","湖區遊船建議加一件薄外套（湖上風大)"],
+  notes:["Plan A（採用）：格林德瓦(纜車)→First(健行Bachalpsee來回2hr)→步行/公車回鎮上→火車Brienz→船Giessbach See→船Interlaken Ost→纜車Harder Kulm","Plan B備案：格林德瓦(火車)→施皮茲(船)→圖恩(火車)→格林德瓦，天氣不佳或想改走湖區城鎮可切換","First纜車票SBB APP購買(STP半價38)；山下纜車站有廁所；Harder Kulm山下纜車站也有廁所，可帶餅乾餵鳥"],
+  packing:["登山杖(可選)","足夠飲水","防曬乳、太陽眼鏡"],
+  schedule:[
+    {t:"07:30-08:00", a:"早餐"},
+    {t:"09:00", a:"纜車格林德瓦BGF→First（08:00-16:30營運，25分鐘）"},
+    {t:"09:00-12:00", a:"First Cliff Walk → First View → Bachalpsee健行來回（約2小時）"},
+    {t:"12:00", a:"午餐（COOP購買）"},
+    {t:"11:47", a:"火車格林德瓦→Brienz（約12:53抵達）"},
+    {t:"13:40", a:"船Brienz→Giessbach See（約13:51抵達）"},
+    {t:"13:51-15:51", a:"吉斯河大酒店、Giessbach瀑布、眺望布里恩茲湖"},
+    {t:"15:51", a:"船Giessbach See→Interlaken Ost（約16:53抵達）"},
+    {t:"17:10", a:"纜車Interlaken→Harder Kulm（STP半價來回CHF22）"},
+    {t:"17:00-20:00", a:"Harder Kulm觀景台：俯瞰雙湖、高山野生動物園"},
+    {t:"20:00", a:"晚餐（Interlaken多家餐廳可選）"},
+  ]
+},
+{
+  date:"09/19（六）", hotel:"Grindelwald（同上）", tier:"glacier", altLabel:"~2970m 雪朗峰",
+  title:"雪朗峰（007觀景台）→ 米倫小鎮 → 勞特布龍嫩瀑布鎮",
+  route:"飯店 → 雪朗峰(Piz Gloria) → 米倫小鎮 → 勞特布龍嫩(瀑布鎮) → 飯店",
+  weather:{temp:"雪朗峰 -3–4°C／米倫8–13°C／瀑布鎮10–15°C", sub:"雪朗峰風力強勁，體感溫度常低於顯示溫度5°C以上"},
+  clothing:["厚羽絨/防水保暖外套＋防風層","保暖手套、毛帽","太陽眼鏡＋防曬乳（山頂日照強烈)"],
+  notes:["路線「右上左下」：格林德瓦→勞特布龍嫩(火車)→Grütschalp(纜車)→Mürren(火車)→雪朗峰(纜車)，回程Mürren→Stechelberg(纜車)→141公車→Trümmelbach瀑布→步行40分回勞特布龍嫩","Piz Gloria山頂餐廳已訂位（11:00與12:30皆有訂位，確認是否吃Buffet），山頂另有Thrill walk顫慄步道","Trümmelbach Falls（09:00-17:00，CHF14）建議從最上層電梯往下逛比較不累；Staubbach Falls可走進瀑布後方（濕滑注意）"],
+  packing:["保暖手套","防風外套帽子繩(避免被吹走)","相機防手震(山頂風大)"],
+  schedule:[
+    {t:"07:30-08:00", a:"早餐"},
+    {t:"08:17", a:"火車格林德瓦→勞特布龍嫩（約08:56抵達）"},
+    {t:"09:06", a:"纜車勞特布龍嫩→Grütschalp（約09:10抵達）"},
+    {t:"09:13", a:"火車Grütschalp→Mürren（約09:24抵達，建議坐左側）"},
+    {t:"09:30-10:00", a:"步行前往Mürren纜車站（10-15分鐘）"},
+    {t:"10:00", a:"纜車Mürren→雪朗峰（約10:15/10:45抵達）"},
+    {t:"08:00-11:30", a:"雪朗峰觀景台Piz Gloria、Thrill walk顫慄步道"},
+    {t:"12:30-14:00", a:"Piz Gloria山頂餐廳午餐（已訂位）"},
+    {t:"14:21", a:"纜車雪朗峰→Mürren（約14:35抵達）"},
+    {t:"14:51", a:"纜車Mürren→Stechelberg（約14:55抵達）"},
+    {t:"15:10", a:"141公車Stechelberg→Trümmelbachfälle（約15:14抵達）"},
+    {t:"15:30", a:"Trümmelbach Falls（CHF14）→ 步行40分鐘至Staubbach Falls"},
+    {t:"17:01", a:"火車勞特布龍嫩→格林德瓦（約17:40抵達）"},
+    {t:"18:00", a:"晚餐，COOP買隔天午餐"},
+  ]
+},
+{
+  date:"09/20（日）", hotel:"Hotel Bristol Zermatt", tier:"high", altLabel:"~2869m Eggishorn",
+  title:"阿奇萊冰河/Eggishorn（阿萊奇冰川展望）→ 前往策馬特",
+  route:"飯店 → Eggishorn(阿萊奇冰川UNESCO世界遺產展望點) → 前往策馬特 → 飯店",
+  weather:{temp:"Eggishorn 1–7°C／策馬特8–14°C", sub:"高山處偶有強風，移動至策馬特山谷後氣溫回升"},
+  clothing:["保暖防風外套（Eggishorn觀景台停留時間長，體感冷)","保暖手套、毛帽","策馬特山城日夜溫差大，晚上建議加一件外套"],
+  notes:["行李已於本日08:00寄至聖莫里茲（提前寄送以避免帶著大件行李在策馬特及後續移動），小行李箱可放在Fiesch（非SBB車站，在Aletsch Bahnen infocenter置物櫃）","策馬特為無車小鎮，禁行一般汽車，抵達前需在Täsch或直接搭鐵路進入","抵達後可把握日落前半小時到馬特洪峰觀賞點(Mürini 28，飯店走過去20分鐘)拍夕陽"],
+  packing:["登山鞋","保暖外套","轉乘車票確認"],
+  schedule:[
+    {t:"07:20-07:50", a:"早餐、退房，Email飯店確認接送"},
+    {t:"08:00", a:"行李寄送至聖莫里茲"},
+    {t:"08:17", a:"火車格林德瓦→Fiesch（約10:55/11:22抵達）"},
+    {t:"11:00", a:"纜車Fiesch→Fiescheralp（免費，20分鐘一班）"},
+    {t:"11:25", a:"纜車Fiescheralp→Eggishorn（CHF17.5來回）"},
+    {t:"11:30-13:30", a:"Eggishorn：走到十字架、拍阿萊奇冰川"},
+    {t:"14:25", a:"纜車+火車 Eggishorn→策馬特（約17:07/17:50抵達）"},
+    {t:"17:10-17:40", a:"策馬特COOP購買晚餐與隔天午餐"},
+    {t:"17:40", a:"取行李（盡量18:00前完成）"},
+    {t:"18:50", a:"抵達策馬特，日落前往馬特洪峰觀賞點"},
+  ]
+},
+{
+  date:"09/21（一）", hotel:"Hotel Bristol Zermatt", tier:"high", altLabel:"~2200–2500m 五湖健行",
+  title:"五湖健行 → 策馬特市區",
+  route:"飯店 → 五湖健行步道(Stellisee/Grindjisee等) → 策馬特市區 → 飯店",
+  weather:{temp:"3–11°C", sub:"步道多為緩坡起伏，天氣晴朗時可見馬特洪峰倒影於湖面"},
+  clothing:["排汗衣＋防風外套（分段式，健行升溫後可脫）","健行鞋（步道約9–10公里，起伏路段多）","防曬乳、太陽眼鏡、帽子"],
+  notes:["路線一(3hr,較短)：施德利湖→格林蒂湖→沿途遠眺格朗湖→纜車回Sunnegga→萊湖→遠眺摩吉湖→軌道纜車回策馬特；路線二(5hr)：五湖全走完再回Sunnegga（第一湖施德利湖最美，若累了看到第二湖可提早折返）","日出前可到Getwingbrücke/Kirchbrücke兩座橋看黃金日出（日出前15分鐘抵達）","晚餐18:30已訂位Restaurant Schäferstube（羊排、燉羊膝、夏多布里昂牛排）"],
+  packing:["健行背包","足夠飲水(建議1–1.5L)","行動糧、能量棒","薄手套(早晨氣溫較低)"],
+  schedule:[
+    {t:"日出前", a:"（自由參加）Getwingbrücke/Kirchbrücke拍黃金日出"},
+    {t:"08:00-08:30", a:"步行8分鐘至Zermatt纜索鐵路站 → 纜索鐵路上Sunnegga"},
+    {t:"09:00-15:00", a:"五湖健行：施德利湖→格林蒂湖→(格朗湖遠眺)→Sunnegga→萊湖→(摩吉湖遠眺)→纜索鐵路回策馬特"},
+    {t:"16:00", a:"策馬特市區：Bahnhofstrasse、馬特洪峰觀景點、聖莫里西堂、馬特洪峰博物館、蘑菇屋"},
+    {t:"17:30", a:"超市（COOP/Migros/Denner）購買隔天午餐"},
+    {t:"18:30", a:"晚餐：Restaurant Schäferstube（已訂位）"},
+  ]
+},
+{
+  date:"09/22（二）", hotel:"Hotel Bristol Zermatt", tier:"glacier", altLabel:"~3883m 冰川天堂",
+  title:"哥納葛特（利菲爾湖）→ 馬特洪峰冰川天堂",
+  route:"飯店 → Gornergrat(利菲爾湖Riffelsee) → 馬特洪峰冰川天堂(Matterhorn Glacier Paradise) → 飯店",
+  weather:{temp:"哥納葛特 -2–5°C／冰川天堂 -8–0°C", sub:"歐洲海拔最高纜車站，終年積雪，體感風寒效應明顯"},
+  clothing:["發熱衣＋厚羽絨＋防水防風外殼（全套保暖）","防水保暖手套、毛帽、圍脖","雪地也可能濕滑，建議抓地力佳的鞋或防滑鞋套","太陽眼鏡(雪地反光強)＋高係數防曬乳"],
+  notes:["Gornergrat齒軌列車建議坐右側，山頂3100 Kulmhotel為瑞士最高飯店，紀念品店有馬特洪峰杯；沿途Rotenboden→Riffelsee(利菲爾湖)→Riffelberg健行約100分鐘，海拔2800m的高山花園是歐洲最高","冰川天堂纜車路線：Zermatt→Furi→Trockener Steg(可停留適應高度30-45分)→Matterhorn glacier paradise；8:30-16:30需注意保暖，穿上所有裝備","晚餐：Grampi's Bar & Restaurant（豬肋排、松露燉飯、瑪格莉特披薩）"],
+  packing:["備用手套與襪子","保溫瓶熱飲","護唇膏、護手霜","如有心肺/高血壓病史請自備常備藥物"],
+  schedule:[
+    {t:"07:30-08:00", a:"早餐"},
+    {t:"08:00", a:"齒軌列車策馬特→Gornergrat（約08:33/08:57抵達，選右側）"},
+    {t:"08:30-10:00", a:"Gornergrat：3100 Kulmhotel、Gorner Glacier、Golden Spot天橋觀景台"},
+    {t:"09:31", a:"齒軌列車Gornergrat→Rotenboden（約10:15抵達）"},
+    {t:"10:30-11:30", a:"健行Rotenboden→Riffelsee利菲爾湖→Riffelberg高山花園（約100分鐘）"},
+    {t:"12:00", a:"齒軌列車Riffelberg→策馬特（約12:39抵達）"},
+    {t:"13:30", a:"纜車策馬特→Furi（7分鐘）→Trockener Steg（20分鐘，可停留適應高度）"},
+    {t:"14:30-16:30", a:"馬特洪峰冰川天堂：電影放映區、冰河宮殿、360度全景觀景台、雪上運動區"},
+    {t:"18:00", a:"晚餐：Grampi's Bar & Restaurant"},
+  ]
+},
+{
+  date:"09/23（三）", hotel:"Hotel Hauser（聖莫里茲）", tier:"mid", altLabel:"~2044m 歐拜阿卜隘口", 
+  title:"冰河列車路線（區間車）→ 前往聖莫里茲",
+  route:"飯店 → 冰河列車景觀路線(分區間搭乘) → 飯店(聖莫里茲)",
+  weather:{temp:"車廂內恆溫舒適／窗外沿途3–15°C不等", sub:"全程多為車廂內觀景，途經歐拜阿卜隘口(2044m)一帶可見初雪"},
+  clothing:["舒適保暖便服即可（多數時間在車廂內）","月台等車時建議加一件外套禦寒"],
+  notes:["路線為區間車接力：策馬特→Visp→Andermatt(不停留,經魔鬼橋)→Chur→St. Moritz，全程約08:15-19:00","建議坐前面車廂，注意防曬(太陽大、無窗簾)；庫爾(Chur)→聖莫里茲這段要坐右側車尾才拍得到Landwasser高架橋與火車同框","行李已於本日寄送至蘇黎世（此程之後直接輕裝走到9/25）；Andermatt→Disentis段可見Rhine Gorge萊茵峽谷(坐右側)，Disentis→Chur可順道逛Chur舊城區"],
+  packing:["相機/手機電池備用","輕便零食飲水","舒適頸枕(長時間乘車)"],
+  schedule:[
+    {t:"08:37", a:"火車策馬特→Visp（約09:47抵達）"},
+    {t:"10:08", a:"火車Visp→Andermatt（約12:20抵達，經魔鬼橋，坐左側）"},
+    {t:"12:38", a:"火車Andermatt→Disentis（約14:45抵達，Rhine Gorge，坐右側）"},
+    {t:"13:50", a:"火車Disentis→Chur（約16:05抵達，坐右側；可逛Chur舊城區、教堂）"},
+    {t:"15:58", a:"火車Chur→St. Moritz（約18:55抵達，Landwasser高架橋，坐右側車尾）"},
+    {t:"19:00", a:"晚餐：COOP+泡麵，順便買隔天零食"},
+  ]
+},
+{
+  date:"09/24（四）", hotel:"Hotel Hauser（聖莫里茲）", tier:"glacier", altLabel:"~2978m 魔女峰/白湖健行",
+  title:"魔女峰（白湖健行）→ 蒂拉諾(Tirano)",
+  route:"飯店 → 魔女峰(Diavolezza)白湖健行 → Tirano(義大利邊境小鎮) → 飯店",
+  weather:{temp:"魔女峰 -3–4°C／Tirano 15–21°C", sub:"上午高山健行寒冷，下午進入義大利側氣溫明顯回暖"},
+  clothing:["早上：厚保暖外套＋防風層＋保暖手套毛帽","健行鞋(白湖步道碎石與雪地混合)","下午Tirano氣溫較高，建議洋蔥式脫穿方便調整"],
+  notes:["白湖健行路線：Diavolezza步行至Alp Grüm（1.5-2hr），沿途可拍到火車迴旋畫面，經過白湖(Lago Bianco)與帕魯冰川(Palü Glacier)","若入住聖莫里茲/蓬特雷西納旅館可能獲贈Engadin Card免費搭乘部分纜車，記得向飯店確認","Tirano推薦特色菜Sciatt+Pizzoccheri，晚餐可選Trattoria Valtellinese/Ristorante Merizzi/Ristorante Pizzeria Vittoria"],
+  packing:["護照(過境義大利)","少量歐元現金","保暖與輕便衣物皆備(溫差大)"],
+  schedule:[
+    {t:"07:30-08:00", a:"早餐"},
+    {t:"08:20", a:"公車飯店→Bernina Diavolezza, Bahnhof（約08:50/09:20抵達）"},
+    {t:"09:00", a:"纜車Bernina Diavolezza→Diavolezza（20分鐘一班）"},
+    {t:"09:30-11:30", a:"魔女峰(Diavolezza)展望台"},
+    {t:"11:30-13:30", a:"白湖健行：Diavolezza→Alp Grüm（1.5-2hr，經白湖、帕魯冰川）"},
+    {t:"13:44", a:"火車Alp Grüm→Tirano（約15:00/16:23抵達）"},
+    {t:"15:00-17:30", a:"Tirano：義式冰淇淋、聖母教堂、超市Unes、晚餐"},
+    {t:"17:00", a:"火車Tirano→St. Moritz（約19:11/20:11/21:39抵達）"},
+  ]
+},
+{
+  date:"09/25（五）", hotel:"Hotel Bristol Zurich", tier:"mid", altLabel:"~1822m 聖莫里茲",
+  title:"聖莫里茲市區 → 返回蘇黎世",
+  route:"飯店 → 聖莫里茲市區(湖畔散步、精品街) → 蘇黎世 → 飯店",
+  weather:{temp:"聖莫里茲6–13°C／蘇黎世14–20°C", sub:"長途移動日，注意山區與市區溫差"},
+  clothing:["舒適保暖外套","移動日建議簡便好穿脫的洋蔥式layer"],
+  notes:["聖莫里茲著名景點：Badrutt's Palace Hotel五星飯店、Via Serlas精品大街、Lake St. Moritz環湖步道(1.5hr)","蘇黎世傍晚可到ETH蘇黎世聯邦理工學院觀景台(Polyterrasse，可看三大教堂、愛因斯坦置物櫃)看夕陽，搭UBS Polybahn纜車下山","晚餐備案：Swiss Chuchi起司/肉火鍋、Zürcher Geschnetzeltes配Rösti，或Rheinfelder bierhalle藍帶豬排"],
+  packing:["行李重新打包整理","購物戰利品收納袋"],
+  schedule:[
+    {t:"09:30-11:30", a:"聖莫里茲市區：Badrutt's Palace、Via Serlas精品街、環湖散步"},
+    {t:"中餐", a:"COOP"},
+    {t:"12:47", a:"火車聖莫里茲→蘇黎世（約15:53/16:22抵達）"},
+    {t:"傍晚", a:"ETH蘇黎世聯邦理工學院觀景台看夕陽、蘇黎世伴手禮採購"},
+    {t:"晚餐", a:"Swiss Chuchi起司鍋 或 Rheinfelder Bierhalle藍帶豬排"},
+  ]
+},
+{
+  date:"09/26（六）", hotel:"Hotel Bristol Zurich → 機場", tier:"low", altLabel:"~400–670m",
+  title:"聖加侖 → 康斯坦茲 → 飯店 → 機場（夜間飛往杜拜）",
+  route:"飯店 → 聖加侖(修道院圖書館) → 康斯坦茲(德國邊境湖畔小鎮) → 飯店 → 蘇黎世機場搭乘 22:15 ZRH→DXB",
+  weather:{temp:"13–19°C", sub:"入秋早晚偏涼，德瑞邊境湖區風大"},
+  clothing:["輕便保暖外套，方便日間觀光與夜間搭機"],
+  notes:["康斯坦茲位於德國，跨境需隨身攜帶護照","今日晚間22:15從蘇黎世出發飛往杜拜(EK0086)，須辦理杜拜簽證與網路，建議提前抓交通時間並預留機場報到/安檢時間","德國DM藥妝可買Balea面膜/保養品、牙膏、護手霜；ALDI Süd適合買巧克力(Ritter Sport)、軟糖(Haribo小熊)、餅乾(Leibniz奶油餅乾)等伴手禮"],
+  packing:["護照(過境德國)","登機證明/線上報到","行動電源充飽備用(夜間航班)"],
+  schedule:[
+    {t:"08:02", a:"火車蘇黎世→聖加侖（約09:32抵達）"},
+    {t:"09:30-11:30", a:"聖加侖：紅色廣場、舊城凸窗、聖加侖主教座堂、修道院、修道院圖書館(持STP免費)"},
+    {t:"11:15", a:"火車聖加侖→康斯坦茲（約12:50抵達）"},
+    {t:"13:00-17:00", a:"康斯坦茲：舊城區、大教堂、波登湖、伊姆佩里亞雕像、河岸散步"},
+    {t:"15:00", a:"午晚餐：Constanzer Wirtshaus(德國豬腳)或Konzil"},
+    {t:"逛街", a:"德國DM藥妝、EDEKA/ALDI Süd超市採購"},
+    {t:"17:09", a:"火車康斯坦茲→蘇黎世（約18:26/19:26抵達）"},
+    {t:"晚間", a:"返回飯店取回寄放行李、最後打包，前往蘇黎世機場"},
+    {t:"22:15", a:"班機EK0086起飛前往杜拜（48小時前預辦登機，須辦杜拜簽證）"},
+  ]
+},
+{
+  date:"09/27（日）", hotel:"杜拜(過境/一日遊)", tier:"desert", altLabel:"海平面",
+  title:"杜拜一日遊",
+  route:"抵達杜拜(06:25) → 市區一日遊 → 準備隔日凌晨返程班機",
+  weather:{temp:"33–40°C", sub:"日照強烈、濕度高，室內冷氣強、室內外溫差大"},
+  clothing:["透氣短袖/薄長袖防曬衣","遮陽帽、太陽眼鏡","室內商場/景點建議隨身備一件薄外套禦寒"],
+  notes:["與瑞士山區氣溫落差極大（可達30°C以上），行李箱建議把夏季衣物放在容易取用的位置","杜拜為穆斯林國家，進入清真寺等宗教場所或傳統市集請注意穿著保守","戶外活動請多補充水分，避免正午時段長時間曝曬"],
+  packing:["防曬乳(高係數)","水壺/多補水","保守服裝(如安排參觀清真寺)","太陽眼鏡"],
+  schedule:[
+    {t:"06:25", a:"抵達杜拜機場，入境"},
+    {t:"07:30", a:"前往市區或飯店梳洗（如有日間房）"},
+    {t:"09:00", a:"市區觀光開始（哈里發塔、老城區、黃金市集等自選）"},
+    {t:"12:00", a:"室內午餐，避開正午高溫時段"},
+    {t:"14:00", a:"下午行程（建議以室內景點為主）"},
+    {t:"17:00", a:"返回機場方向，準備隔日凌晨航班"},
+    {t:"03:45", a:"隔日凌晨班機EK0386起飛返回台灣（建議提前抵達機場報到）"},
+  ]
+},
+];
+
+// 各景點座標與特色說明（day: 對應 days 陣列索引 0-15）
+const spots = [
+  {day:0, name:"班霍夫大街", lat:47.3745, lng:8.5392, desc:"世界數一數二昂貴的購物街，地下藏有全球最大黃金儲備庫之一，電車緩緩穿梭精品店之間。"},
+  {day:0, name:"奧斯丁巷", lat:47.3717, lng:8.5410, desc:"蘇黎世舊城最上鏡的巷弄，木造老宅懸掛精緻凸窗與花卉裝飾。"},
+  {day:0, name:"林登霍夫山", lat:47.3721, lng:8.5416, desc:"舊城制高點免費觀景平台，曾是羅馬堡壘遺址，俯瞰利馬特河與舊城天際線。"},
+  {day:0, name:"聖彼得教堂", lat:47.3712, lng:8.5417, desc:"擁有歐洲最大教堂鐘面（直徑8.7公尺），鐘塔曾作舊城防火瞭望哨。"},
+  {day:0, name:"蘇黎世聖母大教堂", lat:47.3701, lng:8.5410, desc:"以夏卡爾(Marc Chagall)設計的絢麗彩繪玻璃窗聞名於世。"},
+  {day:0, name:"蘇黎世大教堂", lat:47.3702, lng:8.5441, desc:"宗教改革發源地之一，雙塔地標，內有賈柯梅蒂設計的彩窗。"},
+  {day:0, name:"Zeughauskeller", lat:47.3705, lng:8.5410, desc:"15世紀舊軍火庫改建的餐廳，供應大份量瑞士傳統料理與香腸拼盤。"},
+  {day:1, name:"萊茵瀑布", lat:47.6778, lng:8.6153, desc:"歐洲流量最大的瀑布，可搭船直達瀑布中央礁岩近距離感受磅礴水勢。"},
+  {day:1, name:"沙夫豪森", lat:47.6970, lng:8.6305, desc:"舊城以精緻凸窗與濕壁畫立面聞名，慕諾特城堡俯瞰萊茵河。"},
+  {day:1, name:"施泰因", lat:47.6598, lng:8.8567, desc:"瑞士最美彩繪山牆小鎮之一，中世紀市政廳廣場保存完好。"},
+  {day:2, name:"伯恩舊城", lat:46.9480, lng:7.4474, desc:"UNESCO世界遺產，鐘樓報時偶戲運作超過600年，熊苑可近距離看瑞士國寶熊。"},
+  {day:2, name:"瑞吉山", lat:47.0575, lng:8.4878, desc:"有「山后」美譽，歐洲最早開通齒軌鐵路的山峰之一，360度視野可見多座湖泊。"},
+  {day:3, name:"皮拉圖斯山", lat:46.9789, lng:8.2551, desc:"擁有全球最陡齒軌鐵路（坡度達48%），傳說是統治者彼拉多的葬身之地。"},
+  {day:3, name:"卡貝爾橋", lat:47.0512, lng:8.3058, desc:"歐洲現存最古老的有頂木橋，橋內樑架繪有琉森歷史畫作。"},
+  {day:3, name:"獅子紀念碑", lat:47.0536, lng:8.3103, desc:"紀念瑞士傭兵的哀傷石獅雕像，馬克吐溫稱其為「世界上最哀傷的石頭」。"},
+  {day:4, name:"石丹峰", lat:46.9269, lng:8.3608, desc:"全球唯一雙層露天敞篷纜車(CabriO)，山頂設有旱獺保護區。"},
+  {day:5, name:"少女峰", lat:46.5474, lng:7.9852, desc:"「Top of Europe」，歐洲海拔最高火車站，內有冰宮與阿萊奇冰川觀景台。"},
+  {day:5, name:"小夏戴克", lat:46.5850, lng:7.9631, desc:"正對艾格峰北壁的健行必經點，是欣賞少女峰三連峰的經典角度。"},
+  {day:5, name:"溫根", lat:46.6058, lng:7.9219, desc:"無車山城，純樸阿爾卑斯風光，滑雪與健行愛好者的度假勝地。"},
+  {day:6, name:"First", lat:46.6690, lng:8.0710, desc:"格林德瓦知名觀景台，設有懸空觀景平台與長距離滑索First Flyer。"},
+  {day:6, name:"Bachalpsee", lat:46.6770, lng:8.0790, desc:"阿爾卑斯山區最上鏡的高山湖泊之一，無風晴天可映出少女峰三連峰倒影。"},
+  {day:6, name:"Harder Kulm", lat:46.6989, lng:7.8663, desc:"俯瞰因特拉肯及圖恩湖、布里恩茲湖雙湖美景的懸崖觀景台。"},
+  {day:7, name:"雪朗峰", lat:46.5575, lng:7.8357, desc:"007電影《女王密使》拍攝地，旋轉餐廳可360度環視阿爾卑斯群峰。"},
+  {day:7, name:"米倫", lat:46.5597, lng:7.8933, desc:"海拔1650公尺無車小鎮，正對艾格峰、僧侶峰與少女峰。"},
+  {day:7, name:"勞特布龍嫩", lat:46.5934, lng:7.9078, desc:"擁有72座瀑布的U型冰河谷地，史陶河瀑布落差近300公尺。"},
+  {day:8, name:"Eggishorn", lat:46.4356, lng:8.1044, desc:"眺望UNESCO世界遺產阿萊奇冰川（歐洲最長冰川）的最佳觀景點之一。"},
+  {day:8, name:"策馬特", lat:46.0207, lng:7.7491, desc:"無車山城，馬特洪峰的門戶，以高級滑雪度假與登山文化聞名。"},
+  {day:9, name:"五湖健行步道", lat:46.0050, lng:7.7550, desc:"沿線串連五座高山湖泊，是眺望馬特洪峰倒影最受歡迎的健行路線。"},
+  {day:10, name:"Gornergrat", lat:45.9842, lng:7.7858, desc:"歐洲海拔最高的露天齒軌鐵路，終點可近距離眺望29座4000公尺以上高峰。"},
+  {day:10, name:"馬特洪峰冰川天堂", lat:45.9375, lng:7.7267, desc:"歐洲海拔最高纜車站(3883m)，設有冰宮與全景觀景台。"},
+  {day:11, name:"冰河列車", lat:46.2500, lng:8.9000, desc:"全程約8小時、跨越291座橋樑及91條隧道，有「全球最慢的特快車」美譽。"},
+  {day:12, name:"魔女峰(Diavolezza)", lat:46.4372, lng:9.9603, desc:"白湖(Lago Bianco)健行起點，可遠眺伯連納峰群冰川地形。"},
+  {day:12, name:"Tirano", lat:46.2167, lng:10.1667, desc:"義大利邊境小鎮，伯連納快車終點站，融合瑞義文化風情。"},
+  {day:13, name:"聖莫里茲", lat:46.4908, lng:9.8355, desc:"兩度舉辦冬季奧運的頂級度假勝地，以清澈高山湖泊與奢華氛圍聞名。"},
+  {day:14, name:"聖加侖修道院圖書館", lat:47.4245, lng:9.3767, desc:"UNESCO世界遺產，館藏中世紀手抄本，被譽為「靈魂的藥房」。"},
+  {day:14, name:"康斯坦茲", lat:47.6603, lng:9.1758, desc:"德國波登湖畔小鎮，保留完整中世紀舊城與湖濱風光。"},
+  {day:15, name:"杜拜", lat:25.2048, lng:55.2708, desc:"融合超現代摩天大樓與傳統市集、沙漠文化的中東大都會。"},
+];
+const nav = document.getElementById("dayNav");
+const cardsEl = document.getElementById("cards");
+
+days.forEach((d,i)=>{
+  const btn = document.createElement("button");
+  btn.className = "daybtn"+(i===0?" active":"");
+  btn.textContent = d.date;
+  btn.onclick = ()=> showDay(i);
+  nav.appendChild(btn);
+
+  const t = TIER[d.tier];
+  const card = document.createElement("div");
+  card.className = "day-card"+(i===0?" show":"");
+  card.innerHTML = `
+    <div class="day-rail">
+      <div class="day-num">${String(i+1).padStart(2,"0")}</div>
+      <div class="day-total">/ ${days.length}</div>
+      <div class="elev-track"><div class="elev-fill" style="height:${t.fill}%;background:${t.color}"></div></div>
+      <div class="elev-label">${t.label}<br>${d.altLabel}</div>
+    </div>
+    <div class="day-body">
+      <div class="day-head">
+        <div>
+          <div class="date-tag">${d.date}</div>
+          <div class="day-title">${d.title}</div>
+          <div class="route-line">${d.route}</div>
+        </div>
+        <div class="hotel-tag">🏨 ${d.hotel}</div>
+      </div>
+      <div class="timeline-block main-timeline">
+        <h4>🕐 每日行程時間表</h4>
+        <div class="timeline">
+          ${d.schedule.map(s=>`
+            <div class="tl-row">
+              <div class="tl-time">${s.t}</div>
+              <div class="tl-dot"></div>
+              <div class="tl-text">${s.a}</div>
+            </div>`).join("")}
+        </div>
+      </div>
+
+      ${(()=>{
+        const hl = spots.filter(s=>s.day===i);
+        if(!hl.length) return "";
+        return `<div class="highlight-block">
+          <h4>✨ 景點特色</h4>
+          <div class="highlight-grid">
+            ${hl.map(s=>`<div class="hl-card"><div class="hl-name">📍 ${s.name}</div><div class="hl-desc">${s.desc}</div></div>`).join("")}
+          </div>
+        </div>`;
+      })()}
+
+      <details class="aux">
+        <summary>☁ 天氣穿搭與攜帶物品（點擊展開）<span class="aux-hint">${d.weather.temp}</span></summary>
+        <div class="aux-grid">
+          <div class="aux-col">
+            <h5>☁ 天氣參考</h5>
+            <div class="aux-temp">${d.weather.temp}</div>
+            <div class="aux-sub">${d.weather.sub}</div>
+          </div>
+          <div class="aux-col">
+            <h5>👕 穿搭建議</h5>
+            <ul>${d.clothing.map(x=>`<li>${x}</li>`).join("")}</ul>
+          </div>
+          <div class="aux-col">
+            <h5>🎒 建議攜帶物品</h5>
+            <ul>${d.packing.map(x=>`<li>${x}</li>`).join("")}</ul>
+          </div>
+        </div>
+        <div class="aux-notes">${d.notes.map(x=>`<div>⚠ ${x}</div>`).join("")}</div>
+      </details>
+    </div>
+  `;
+  cardsEl.appendChild(card);
+});
+
+function showDay(idx){
+  document.querySelectorAll(".daybtn").forEach((b,i)=>b.classList.toggle("active", i===idx));
+  document.querySelectorAll(".day-card").forEach((c,i)=>c.classList.toggle("show", i===idx));
+  document.querySelectorAll(".daybtn")[idx].scrollIntoView({behavior:"smooth", inline:"center", block:"nearest"});
+}
+
+// ---- 頁籤切換：每日行程 / 冰河列車攻略 ----
+const tabDays = document.getElementById("tabDays");
+const tabGlacier = document.getElementById("tabGlacier");
+const viewDays = document.getElementById("viewDays");
+const viewGlacier = document.getElementById("viewGlacier");
+
+tabDays.onclick = ()=>{
+  tabDays.classList.add("active"); tabGlacier.classList.remove("active");
+  viewDays.style.display = ""; viewGlacier.style.display = "none";
+};
+tabGlacier.onclick = ()=>{
+  tabGlacier.classList.add("active"); tabDays.classList.remove("active");
+  viewDays.style.display = "none"; viewGlacier.style.display = "";
+};
+</script>
+</body>
+</html>
